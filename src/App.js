@@ -105,6 +105,7 @@ function App() {
             >
               <MenuItem value="testnet">Testnet</MenuItem>
               <MenuItem value="devnet">Devnet</MenuItem>
+              <MenuItem value="mainnet">Mainnet</MenuItem>
             </Select>
           </Toolbar>
         </AppBar>

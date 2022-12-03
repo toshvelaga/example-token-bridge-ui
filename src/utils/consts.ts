@@ -56,11 +56,15 @@ import { ChainId as InjectiveChainId } from "@injectivelabs/ts-types";
 import nearIcon from "../icons/near.svg";
 import { ConnectConfig, keyStores } from "near-api-js";
 
-export type Cluster = "devnet" | "testnet";
+export type Cluster = "devnet" | "testnet" | "mainnet";
 const urlParams = new URLSearchParams(window.location.search);
 const paramCluster = urlParams.get("cluster");
 export const CLUSTER: Cluster =
-  paramCluster === "devnet" ? "devnet" : "testnet";
+  paramCluster === "devnet"
+    ? "devnet"
+    : paramCluster === "mainnet"
+    ? "mainnet"
+    : "testnet";
 export interface ChainInfo {
   id: ChainId;
   name: string;
@@ -337,8 +341,11 @@ export const getExplorerName = (chainId: ChainId) =>
 export const WORMHOLE_RPC_HOSTS =
   CLUSTER === "testnet"
     ? ["https://wormhole-v2-testnet-api.certus.one"]
+    : CLUSTER === "mainnet"
+    ? ["https://wormhole-v2-mainnet-api.certus.one"]
     : ["http://localhost:7071"];
-export const ETH_NETWORK_CHAIN_ID = CLUSTER === "testnet" ? 5 : 1337;
+export const ETH_NETWORK_CHAIN_ID =
+  CLUSTER === "testnet" ? 5 : CLUSTER === "mainnet" ? 1 : 1337;
 export const BSC_NETWORK_CHAIN_ID = CLUSTER === "testnet" ? 97 : 1397;
 export const POLYGON_NETWORK_CHAIN_ID = CLUSTER === "testnet" ? 80001 : 1381;
 export const AVAX_NETWORK_CHAIN_ID = CLUSTER === "testnet" ? 43113 : 1381;
@@ -380,11 +387,17 @@ export const getEvmChainId = (chainId: ChainId) =>
     : chainId === CHAIN_ID_ARBITRUM
     ? ARBITRUM_NETWORK_CHAIN_ID
     : undefined;
-export const SOLANA_HOST = process.env.REACT_APP_SOLANA_API_URL
-  ? process.env.REACT_APP_SOLANA_API_URL
-  : CLUSTER === "testnet"
-  ? clusterApiUrl("devnet")
-  : "http://localhost:8899";
+
+const SOLANA_MAINNET_RPC_URL = process.env.REACT_APP_SOLANA_MAINNET_RPC_URL
+  ? process.env.REACT_APP_SOLANA_MAINNET_RPC_URL
+  : "https://api.mainnet-beta.solana.com";
+
+export const SOLANA_HOST =
+  CLUSTER === "mainnet"
+    ? SOLANA_MAINNET_RPC_URL
+    : CLUSTER === "testnet"
+    ? clusterApiUrl("devnet")
+    : "http://localhost:8899";
 
 export const getTerraConfig = (chainId: TerraChainId) => {
   const isClassic = chainId === CHAIN_ID_TERRA;
@@ -458,13 +471,27 @@ export const TERRA_TEST_TOKEN_ADDRESS =
 
 export const ALGORAND_WAIT_FOR_CONFIRMATIONS = CLUSTER === "testnet" ? 4 : 1;
 
+console.log("CONTRACTS: ", CONTRACTS);
+
 export const SOL_BRIDGE_ADDRESS =
-  CONTRACTS[CLUSTER === "testnet" ? "TESTNET" : "DEVNET"].solana.core;
+  CONTRACTS[
+    CLUSTER === "testnet"
+      ? "TESTNET"
+      : CLUSTER === "mainnet"
+      ? "MAINNET"
+      : "DEVNET"
+  ].solana.core;
 
 export const SOL_NFT_BRIDGE_ADDRESS =
   CONTRACTS[CLUSTER === "testnet" ? "TESTNET" : "DEVNET"].solana.nft_bridge;
 export const SOL_TOKEN_BRIDGE_ADDRESS =
-  CONTRACTS[CLUSTER === "testnet" ? "TESTNET" : "DEVNET"].solana.token_bridge;
+  CONTRACTS[
+    CLUSTER === "testnet"
+      ? "TESTNET"
+      : CLUSTER === "mainnet"
+      ? "MAINNET"
+      : "DEVNET"
+  ].solana.token_bridge;
 
 export const ALGORAND_BRIDGE_ID = BigInt(
   CONTRACTS[CLUSTER === "testnet" ? "TESTNET" : "DEVNET"].algorand.core
@@ -480,17 +507,29 @@ export const NEAR_TOKEN_BRIDGE_ACCOUNT =
   CLUSTER === "testnet" ? "token.wormhole.testnet" : "token.test.near";
 
 export const getBridgeAddressForChain = (chainId: ChainId) =>
-  CONTRACTS[CLUSTER === "testnet" ? "TESTNET" : "DEVNET"][
-    coalesceChainName(chainId)
-  ].core || "";
+  CONTRACTS[
+    CLUSTER === "testnet"
+      ? "TESTNET"
+      : CLUSTER === "mainnet"
+      ? "MAINNET"
+      : "DEVNET"
+  ][coalesceChainName(chainId)].core || "";
 export const getNFTBridgeAddressForChain = (chainId: ChainId) =>
-  CONTRACTS[CLUSTER === "testnet" ? "TESTNET" : "DEVNET"][
-    coalesceChainName(chainId)
-  ].nft_bridge || "";
+  CONTRACTS[
+    CLUSTER === "testnet"
+      ? "TESTNET"
+      : CLUSTER === "mainnet"
+      ? "MAINNET"
+      : "DEVNET"
+  ][coalesceChainName(chainId)].nft_bridge || "";
 export const getTokenBridgeAddressForChain = (chainId: ChainId) =>
-  CONTRACTS[CLUSTER === "testnet" ? "TESTNET" : "DEVNET"][
-    coalesceChainName(chainId)
-  ].token_bridge || "";
+  CONTRACTS[
+    CLUSTER === "testnet"
+      ? "TESTNET"
+      : CLUSTER === "mainnet"
+      ? "MAINNET"
+      : "DEVNET"
+  ][coalesceChainName(chainId)].token_bridge || "";
 
 export const COVALENT_API_KEY = process.env.REACT_APP_COVALENT_API_KEY
   ? process.env.REACT_APP_COVALENT_API_KEY
